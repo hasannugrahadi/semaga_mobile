@@ -1,16 +1,12 @@
 # semaga_mobile
+Proyek Semester 4 Workshop Aplikasi Mobile Framework
 
-A new Flutter project.
+## Fitur Mobile
+- Tipe soal pilihan ganda, isian, dan uraian
+- Pengacakan soal
+- Realtime status pengerjaan
+- Waktu ujian
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Yang perlu diperhatikan
+- Jadwal pengerjaan per-anggota ada di Projects repository
+- Diharap untuk selalu aktif dalam pengerjaan untuk contributor
