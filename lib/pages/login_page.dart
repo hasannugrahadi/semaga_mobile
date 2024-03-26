@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:semaga_mobile/models/users.dart';
 import 'package:semaga_mobile/pages/dashboard_page.dart';
 import 'package:semaga_mobile/pages/register_page.dart';
 
@@ -15,9 +16,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final _user = User('', '', '', '', '', '');
+
   final textFieldFocusNode = FocusNode();
   bool _obscured = true;
-
+  
   void _toggleObscured() {
     setState(() {
       _obscured = !_obscured;
@@ -123,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (username == '12345' && password == 'hasan'){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DashboardPage()),
+                      MaterialPageRoute(builder: (context) => DashboardPage(user: _user,)),
                     );
                   } else {
                     const snackBar = SnackBar(
