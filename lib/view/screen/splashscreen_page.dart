@@ -1,16 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:semaga_mobile/pages/login_page.dart';
-
-import '../models/users.dart';
+import 'package:semaga_mobile/view/screen/login_page.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 3), () {
+    Timer(
+        const Duration(
+            seconds: 3
+        ), () {
       Navigator.of(context).push(_createRoute());
     });
     return Scaffold(
