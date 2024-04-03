@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:semaga_mobile/pages/splashscreen_page.dart';
+import 'package:semaga_mobile/view/screen/splashscreen_page.dart';
 
 void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

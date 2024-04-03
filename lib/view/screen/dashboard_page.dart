@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import '../models/users.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class DashboardPage extends StatelessWidget {
-   final User user;
+  const DashboardPage({super.key});
 
-  const DashboardPage({super.key, required this.user});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DASHBOARD'),
+        title: Text('DASBOR',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.normal,
+            fontSize: 24,
+            fontFamily: GoogleFonts.robotoCondensed().fontFamily,
+          ),
+        ),
+        titleSpacing: 0.0,
+        backgroundColor: const Color(0xff4682A9),
       ),
       drawer: Drawer(
         child: ListView(
@@ -42,9 +50,21 @@ class DashboardPage extends StatelessWidget {
           ],
         ),
       ),
-      body: Center(
-        child: Text('Selamat datang, ${user.fullname}'),
-      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(35, 10, 35, 10),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+
+                ],
+              )
+            ],
+          ),
+        ),
+      )
     );
   }
 }
