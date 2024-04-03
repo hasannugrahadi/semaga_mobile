@@ -1,12 +1,15 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../models/users.dart';
 
 class DashboardPage extends StatelessWidget {
+   final User user;
+
+  const DashboardPage({super.key, required this.user});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('DASHBOARD'),
+        title: const Text('DASHBOARD'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -27,18 +30,12 @@ class DashboardPage extends StatelessWidget {
             ListTile(
               title: Text('Item 1'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: Text('Item 2'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
                 Navigator.pop(context);
               },
             ),
@@ -46,7 +43,7 @@ class DashboardPage extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text('Hello, Flutter!'),
+        child: Text('Selamat datang, ${user.fullname}'),
       ),
     );
   }

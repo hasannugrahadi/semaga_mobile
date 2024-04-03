@@ -1,6 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:semaga_mobile/models/users.dart';
 import 'package:semaga_mobile/pages/dashboard_page.dart';
+import 'package:semaga_mobile/pages/register_page.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,9 +16,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final _user = User('', '', '', '', '', '');
+
   final textFieldFocusNode = FocusNode();
   bool _obscured = true;
-
+  
   void _toggleObscured() {
     setState(() {
       _obscured = !_obscured;
@@ -121,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (username == '12345' && password == 'hasan'){
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => DashboardPage()),
+                      MaterialPageRoute(builder: (context) => DashboardPage(user: _user,)),
                     );
                   } else {
                     const snackBar = SnackBar(
@@ -134,14 +139,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 197, vertical: 24),
+                    padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width*0.37,),
                     foregroundColor: const Color(0xffFFFFFF),
                     backgroundColor: const Color(0xff3C6D8D)
                 ),
                 child: const Text('Login'),
               ),
               const SizedBox(
-                  height: 80.0
+                  height: 20.0
+              ),
+              RichText(
+                  text: TextSpan(
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 11,
+                      fontFamily: GoogleFonts.roboto().fontFamily,
+                    ),
+                    children: <TextSpan>[
+                      const TextSpan(text: 'Belum mempunyai akun, '),
+                      TextSpan(
+                        text: 'Daftar Sekarang!',
+                        style: const TextStyle(
+                          color: Color(0xff3C6D8D),
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = (){
+                            Navigator.of(context).push(_createRoute());
+                          }
+                      )
+                    ]
+                  ),
               ),
             ],
           ),
@@ -149,12 +177,23 @@ class _LoginScreenState extends State<LoginScreen> {
       ]
     ),
   );
+  }
 }
 
+Route _createRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => RegisterScreen(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(0.0, 1.0);
+      const end = Offset.zero;
+      const curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }
-// Row signup() {
-//   return Row(
-//     MainAxisAlignment: MainAxisAlignment.center,
-//     children: [const Text("Tidak Punya akun?")],
-//   );
-// }
