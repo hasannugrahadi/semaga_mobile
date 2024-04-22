@@ -1,9 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:semaga_mobile/utils/methods.dart';
 import 'package:semaga_mobile/view/reusable_widget/dialogs.dart';
-import '../../models/login_request.dart';
+import '../../models/login.dart';
 import '../../view_model/login_view_model.dart';
 
 import 'dashboard_page.dart';
@@ -18,6 +17,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nisController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  late Future<Login> futureLogin;
 
   final textFieldFocusNode = FocusNode();
   bool _obscured = true;
@@ -140,34 +141,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () async {
                     String nis = _nisController.text;
                     String password = _passwordController.text;
-                    var request = LoginRequest(nis: nis, password: password);
-                    Map<String, dynamic> response = await viewModel.login(request);
-                    if(nis.isNotEmpty && password.isNotEmpty) {
-                      if(response.containsKey('access_token')) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const DashboardPage()
-                          ),
-                        );
-                      } else {
-                        showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return regularDialog(
-                              "NIS atau password\nkamu salah, coba lagi",
-                              "assets/images/ic_warning_triangle.svg"
-                          );
-                        },);
-                      }
+                    if (nis.isNotEmpty && password.isNotEmpty) {
+                     LoginViewModel().fetchLogin(nis, password).then((data){
+                       if (data.access_token.isNotEmpty) {
+                         Navigator.push(
+                           context,
+                           MaterialPageRoute(
+                               builder: (context) => const DashboardPage()
+                           ),
+                         );
+                       } else {
+                         showDialog(
+                           context: context,
+                           builder: (BuildContext context) {
+                             return regularDialog(
+                                 "NIS atau password\nkamu salah, coba lagi",
+                                 "assets/images/ic_warning_triangle.svg");
+                           },
+                         );
+                       }
+                     });
                     } else {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return regularDialog(
                               "Mohon masukkan\nNIS dan password kamu",
-                              "assets/images/ic_warning_triangle.svg"
-                          );
+                              "assets/images/ic_warning_triangle.svg");
                         },
                       );
                     }
@@ -210,10 +210,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
-                                  return confirmationDialog(
+                                  return confirmationDialogWA(
                                       "Apakah kamu ingin menghubungi\nadmin melalui WhatsApp?",
-                                      "assets/images/ic_warning_triangle.svg",
-                                          () => launchWhatsapp());
+                                      "assets/images/ic_warning_triangle.svg");
                                 },
                               );
                             })

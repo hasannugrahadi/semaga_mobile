@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:semaga_mobile/utils/methods.dart';
-
-typedef DialogAction = void Function();
+import 'package:url_launcher/url_launcher.dart';
 
 Dialog regularDialog(String text, image){
   return Dialog(
@@ -41,7 +39,7 @@ Dialog regularDialog(String text, image){
   );
 }
 
-Dialog confirmationDialog(String text, String image, DialogAction methodDialog){
+Dialog confirmationDialogWA(String text, String image){
   return Dialog(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(15.0),
@@ -76,7 +74,15 @@ Dialog confirmationDialog(String text, String image, DialogAction methodDialog){
           ),
           ElevatedButton(
               onPressed:(){
-                methodDialog;
+                launchWhatsapp() async {
+                  var whatsapp = "+6283111012720";
+                  var whatsappAndroid =Uri.parse("whatsapp://send?phone=$whatsapp");
+                  if (await canLaunchUrl(whatsappAndroid)) {
+                    await launchUrl(whatsappAndroid);
+                  } else {
+                    throw const FormatException('Error');
+                  }
+                }
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
