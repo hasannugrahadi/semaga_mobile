@@ -2,10 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:semaga_mobile/view/reusable_widget/dialogs.dart';
-import '../../models/login.dart';
 import '../../view_model/login_view_model.dart';
-
-import 'dashboard_page.dart';
+import '../../view_model/student_view_model.dart';
+import 'dashboard_main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +18,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _nisController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  late Future<Login> futureLogin;
+  final LoginViewModel _loginViewModel = LoginViewModel();
+  final StudentViewModel _studentViewModel = StudentViewModel();
 
   final textFieldFocusNode = FocusNode();
   bool _obscured = true;
@@ -26,10 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
   void _toggleObscured() {
     setState(() {
       _obscured = !_obscured;
-      if (textFieldFocusNode.hasPrimaryFocus)
+      if (textFieldFocusNode.hasPrimaryFocus) {
         return; // If focus is on text field, don't unfocused
-      textFieldFocusNode.canRequestFocus =
-          false; // Prevents focus if tap on eye
+      }
+      textFieldFocusNode.canRequestFocus = false; // Prevents focus if tap on eye
+    });
+  }
+
+  void _savePreferences(token, studentName, studentNis) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setString('token', token);
+      prefs.setString('name', studentName);
+      prefs.setString('nis', studentNis);
     });
   }
 
@@ -39,7 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Column(children: [
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
         Container(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height * 0.4,
@@ -50,7 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15))),
+                  bottomRight: Radius.circular(15)
+              )
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -67,16 +81,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.04,
+                height: MediaQuery.of(context).size.height * 0.06,
               ),
             ],
           ),
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.width * 0.15,
-        ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35),
+          padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -86,8 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(
-                          color: Color(0xff3C6D8D), width: 1.0),
-                      borderRadius: BorderRadius.circular(10.0)),
+                          color: Color(0xff3C6D8D), width: 1.0
+                      ),
+                      borderRadius: BorderRadius.circular(10.0)
+                  ),
                   hintText: 'Masukkan NIS',
                   hintStyle: const TextStyle(
                       fontSize: 16.0,
@@ -109,8 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(
-                          color: Color(0xff3C6D8D), width: 1.0),
-                      borderRadius: BorderRadius.circular(10.0)),
+                          color: Color(0xff3C6D8D), width: 1.0
+                      ),
+                      borderRadius: BorderRadius.circular(10.0)
+                  ),
                   hintText: 'Masukkan password',
                   hintStyle: const TextStyle(
                       fontSize: 16.0,
@@ -142,25 +157,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     String nis = _nisController.text;
                     String password = _passwordController.text;
                     if (nis.isNotEmpty && password.isNotEmpty) {
-                     LoginViewModel().fetchLogin(nis, password).then((data){
-                       if (data.access_token.isNotEmpty) {
-                         Navigator.push(
-                           context,
-                           MaterialPageRoute(
-                               builder: (context) => const DashboardPage()
-                           ),
-                         );
-                       } else {
-                         showDialog(
-                           context: context,
-                           builder: (BuildContext context) {
-                             return regularDialog(
-                                 "NIS atau password\nkamu salah, coba lagi",
-                                 "assets/images/ic_warning_triangle.svg");
-                           },
-                         );
-                       }
-                     });
+                     try{
+                       await _loginViewModel.fetchLogin(nis, password);
+                       String token = _loginViewModel.login.access_token;
+                       await _studentViewModel.fetchStudent(token);
+                       String studentName = _studentViewModel.student.name!;
+                       String studentNis = _studentViewModel.student.nis.toString();
+                       _savePreferences(token, studentName, studentNis);
+                       print(token);
+                       Navigator.push(
+                         context,
+                         MaterialPageRoute(
+                             builder: (context) => DashboardMain(tokenUser: token)
+                         ),
+                       );
+                     } catch(e) {
+                       showDialog(
+                         context: context,
+                         builder: (BuildContext context) {
+                           return regularDialog(
+                               "NIS atau Password kamu\nsalah, coba lagi",
+                               "assets/images/ic_warning_triangle.svg"
+                           );
+                         },
+                       );
+                     }
                     } else {
                       showDialog(
                         context: context,
@@ -179,9 +200,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       minimumSize: const Size(double.infinity, 50),
                       foregroundColor: const Color(0xffFFFFFF),
                       backgroundColor: const Color(0xff3C6D8D)),
-                  child: const Text(
+                  child: Text(
                     'Login',
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      fontFamily: GoogleFonts.robotoCondensed().fontFamily,
+                    ),
                   ),
                 ),
               ),
@@ -197,11 +222,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontFamily: GoogleFonts.roboto().fontFamily,
                     ),
                     children: <TextSpan>[
-                      const TextSpan(text: ''),
                       TextSpan(
-                          text: 'Butuh bantuan?',
+                          text: 'Perlu bantuan?',
                           style: const TextStyle(
-                            fontSize: 14,
+                            fontSize: 15,
                             color: Color(0xffA3C0D4),
                             decoration: TextDecoration.underline,
                           ),
@@ -218,17 +242,19 @@ class _LoginScreenState extends State<LoginScreen> {
                             })
                     ]),
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.24,
+              ),
+              Center(
+                child: Image.asset('assets/images/logo_school.png',
+                    fit: BoxFit.contain, width: 200
+                ),
+              )
             ],
           ),
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.15,
-        ),
-        Center(
-          child: Image.asset('assets/images/logo_school.png',
-              fit: BoxFit.contain, width: 200),
-        )
       ]),
     );
   }
 }
+
