@@ -11,7 +11,7 @@
 class Student {
   Student({
       num? id, 
-      String? nis, 
+      num? nis,
       String? name, 
       String? grade, 
       String? gender, 
@@ -42,7 +42,7 @@ class Student {
     _updatedAt = json['updated_at'];
   }
   num? _id;
-  String? _nis;
+  num? _nis;
   String? _name;
   String? _grade;
   String? _gender;
@@ -51,7 +51,7 @@ class Student {
   String? _createdAt;
   String? _updatedAt;
 Student copyWith({  num? id,
-  String? nis,
+  num? nis,
   String? name,
   String? grade,
   String? gender,
@@ -70,7 +70,7 @@ Student copyWith({  num? id,
   updatedAt: updatedAt ?? _updatedAt,
 );
   num? get id => _id;
-  String? get nis => _nis;
+  num? get nis => _nis;
   String? get name => _name;
   String? get grade => _grade;
   String? get gender => _gender;

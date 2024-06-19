@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:semaga_mobile/view/utils/date_helper.dart';
-
 import '../../model/quiz.dart';
 import '../reusable_widget/quiz_card.dart';
 import '../utils/date_in_bahasa.dart';
 
-Padding DashboardBody(List<Data> quizzes,BuildContext context) {
+Padding DashboardBody(List<Data> quizzes, List<Data> todayQuizzes, List beforeUnsortedIndexToday, List beforeUnsortedIndex, bool isLoading, BuildContext context) {
   DateHelper dateHelper = DateHelper();
   return Padding(
-    padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+    padding: const EdgeInsets.all(15),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -21,8 +20,8 @@ Padding DashboardBody(List<Data> quizzes,BuildContext context) {
             fontWeight: FontWeight.bold,
             fontSize: 20,
             fontFamily: GoogleFonts
-                .robotoCondensed()
-                .fontFamily,
+              .robotoCondensed()
+              .fontFamily,
           ),
         ),
         const SizedBox(height: 5),
@@ -127,30 +126,31 @@ Padding DashboardBody(List<Data> quizzes,BuildContext context) {
           height: 15,
         ),
         Column(
-          children: quizzes.isEmpty
+          children: isLoading
+              ? [
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+          ] : todayQuizzes.isEmpty
               ? [
             const SizedBox(
-              height: 60,
+              height: 80,
               child: Center(
-                child: Text('Tidak ada ujian\nuntuk hari ini', textAlign: TextAlign.center,),
+                child: Text(
+                  'Tidak ada ujian\nuntuk hari ini',
+                  textAlign: TextAlign.center,
+                ),
               ),
             )
-          ] : quizzes.map((quiz) {
-            DateTime timeQuiz = DateTime.parse(quiz.quizDate ?? '');
-            if (dateHelper.isToday(timeQuiz)) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: QuizCards(quiz, context),
-              );
-            } else {
-              return const SizedBox(
-                height: 0
-              );
-            }
+          ] : todayQuizzes.map((quiz) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: QuizCards(quiz, beforeUnsortedIndexToday[todayQuizzes.indexOf(quiz)], context),
+            );
           }).toList(),
         ),
         const Divider(
-          height: 45,
+          height: 60,
           thickness: 1.5,
           color: Color(0xff4682A9),
         ),
@@ -169,7 +169,7 @@ Padding DashboardBody(List<Data> quizzes,BuildContext context) {
               ),
             ),
             Container(
-              width: 140,
+              width: 110,
               height: 30,
               decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xff4682A9)),
@@ -203,7 +203,7 @@ Padding DashboardBody(List<Data> quizzes,BuildContext context) {
                                 borderRadius: BorderRadius.circular(30.0)
                             ),
                             child: Text(
-                              'Sebulan',
+                              'Seminggu',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15,
@@ -222,23 +222,30 @@ Padding DashboardBody(List<Data> quizzes,BuildContext context) {
           ],
         ),
         const SizedBox(
-          height: 25,
+          height: 15,
         ),
         Column(
-          children: quizzes.isEmpty
+          children: isLoading
+              ? [
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+          ] : quizzes.isEmpty
               ? [
             const SizedBox(
-              height: 60,
+              height: 240,
               child: Center(
                 child: Text('Tidak ada ujian\nuntuk minggu ini', textAlign: TextAlign.center,),
               ),
             )
-          ] : quizzes.map((quiz) {
+          ] : quizzes.map((
+              quiz
+              ) {
             DateTime timeQuiz = DateTime.parse(quiz.quizDate ?? '');
             if (dateHelper.isWithinOneMonth(timeQuiz)) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: QuizCards(quiz, context),
+                child: QuizCards(quiz, beforeUnsortedIndex[quizzes.indexOf(quiz)], context),
               );
             } else {
               return const SizedBox(

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:semaga_mobile/model/quiz.dart';
-import 'package:semaga_mobile/view/reusable_widget/snack_popup.dart';
+import 'package:semaga_mobile/view/reusable_widget/table_detail_dashboard.dart';
+import 'package:semaga_mobile/view/screen/warning_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../database/db_helper.dart';
+import '../../view_model/quiz_view_model.dart';
 
 class DetailQuiz extends StatefulWidget {
 
-  final Data quizDetail;
+  final int quizID;
 
-  const DetailQuiz({super.key, required this.quizDetail});
+  const DetailQuiz({super.key, required this.quizID});
 
   @override
   State<DetailQuiz> createState() => _DetailQuizState();
@@ -17,10 +19,40 @@ class DetailQuiz extends StatefulWidget {
 
 class _DetailQuizState extends State<DetailQuiz> {
 
-  final DatabaseHelper dbHelper = DatabaseHelper();
+  final QuizViewModel _quizViewModel = QuizViewModel();
+
+  String _token = '';
+
+  late List<Data> quizzes = [];
+  late Data quizDetail = Data.defaultData();
+
+  void _loadDetailQuiz(token) async{
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = prefs.getString('token') ?? '';
+    });
+    await _quizViewModel.fetchQuiz(token);
+    setState(() {
+      quizzes = _quizViewModel.quizzes;
+      quizDetail = quizzes.elementAt(widget.quizID);
+    });
+  }
+
+  @override
+  void initState() {
+    _loadDetailQuiz(_token);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+
+    String startTime = quizDetail.start?.substring(0, 5) ?? '-';
+    String endTime = quizDetail.end?.substring(0, 5) ?? '-';
+
+    DateTime startDateTime = DateTime.parse('1970-01-01 $startTime:00');
+    DateTime endDateTime = DateTime.parse('1970-01-01 $endTime:00');
+
     return Scaffold(
       appBar: AppBar(
         leading: Builder(
@@ -32,7 +64,7 @@ class _DetailQuizState extends State<DetailQuiz> {
               }
           ),
         ),
-        title: Text(widget.quizDetail.course?.toUpperCase() ?? '-',
+        title: Text(quizDetail.course?.toUpperCase() ?? '-',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.normal,
@@ -44,11 +76,11 @@ class _DetailQuizState extends State<DetailQuiz> {
         backgroundColor: const Color(0xff4682A9),
       ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+        padding: const EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.quizDetail.title?.toUpperCase() ?? '-',
+            Text(quizDetail.title?.toUpperCase() ?? '-',
               style:
               TextStyle(
                 color: const Color(0xff1E3A4B),
@@ -106,9 +138,9 @@ class _DetailQuizState extends State<DetailQuiz> {
             const SizedBox(height: 15),
             Container(
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
               decoration: BoxDecoration(
-                border: Border.all(width: 1, color: const Color(0xff4682A9)),
+                border: Border.all(width: 1, color: const Color(0xff000000)),
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -144,39 +176,25 @@ class _DetailQuizState extends State<DetailQuiz> {
                   ]
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-
-                  ],
-                ),
-                Column(
-                  children: [
-
-                  ],
-                )
-              ],
+            const SizedBox(height: 15),
+            TableDetailDashboard(
+                context,
+                quizDetail.quizDate ?? '-',
+                '$startTime - $endTime',
+                '${endDateTime.difference(startDateTime).inMinutes} Menit',
+                'Belum'
             ),
             const SizedBox(height: 15),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  try {
-                    await dbHelper.insertHistory({
-                      'subject': widget.quizDetail.course,
-                      'date': widget.quizDetail.quizDate,
-                      'title': widget.quizDetail.title,
-                      'startTime': widget.quizDetail.start,
-                      'endTime': widget.quizDetail.end
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(Soyjoy('data berhasil disimpan'));
-                    Navigator.pop(context);
-                  } on Exception catch (e) {
-                    print(e);
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WarningScreen()
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -186,7 +204,7 @@ class _DetailQuizState extends State<DetailQuiz> {
                     foregroundColor: const Color(0xffFFFFFF),
                     backgroundColor: const Color(0xff3C6D8D)),
                 child: Text(
-                  'Masuk',
+                  'Mulai',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,

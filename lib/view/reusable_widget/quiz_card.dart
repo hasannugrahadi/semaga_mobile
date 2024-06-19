@@ -4,13 +4,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:semaga_mobile/view/screen/dashboard_detail.dart';
 import '../../model/quiz.dart';
 
-GestureDetector QuizCards(Data quiz, context) {
+GestureDetector QuizCards(Data quiz, int index, context) {
+  double? length = MediaQuery.of(context).size.width/4;
   return GestureDetector(
     onTap: () {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => DetailQuiz(quizDetail: quiz)
+          builder: (context) => DetailQuiz(quizID : index)
         ),
       );
     },
@@ -18,11 +19,11 @@ GestureDetector QuizCards(Data quiz, context) {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Container(
-          width: MediaQuery.of(context).size.width-(110+15+15),
+          width: MediaQuery.of(context).size.width - (length+15+15),
           height: 110,
           decoration: BoxDecoration(
-              color: const Color(0xff4682A9),
-              borderRadius: BorderRadius.circular(5.0)
+            color: const Color(0xff4682A9),
+            borderRadius: BorderRadius.circular(5.0)
           ),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
@@ -32,50 +33,50 @@ GestureDetector QuizCards(Data quiz, context) {
               children: [
                 RichText(
                   text: TextSpan(
-                      children: <InlineSpan>[
-                        TextSpan(
-                          text: quiz.course?.toUpperCase() ?? '-',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            fontFamily: GoogleFonts.robotoSlab().fontFamily,
-                          ),
+                    children: <InlineSpan>[
+                      TextSpan(
+                        text: quiz.course?.toUpperCase() ?? '-',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: GoogleFonts.robotoSlab().fontFamily,
                         ),
-                        const TextSpan(
-                          text: '\n',
+                      ),
+                      const TextSpan(
+                        text: '\n',
+                      ),
+                      TextSpan(
+                        text: quiz.quizDate,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: GoogleFonts.robotoSlab().fontFamily,
                         ),
-                        TextSpan(
-                          text: quiz.quizDate,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w200,
-                            fontFamily: GoogleFonts.robotoSlab().fontFamily,
-                          ),
-                        ),
-                      ]
+                      ),
+                    ]
                   ),
                 ),
                 Text(
-                    quiz.title ?? '-',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w200,
-                      fontFamily: GoogleFonts.robotoSlab().fontFamily,
-                    )
+                  quiz.title ?? '-',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w200,
+                    fontFamily: GoogleFonts.robotoSlab().fontFamily,
+                  )
                 ),
               ],
             ),
           ),
         ),
         Container(
-          width: 110,
-          height: 110,
+          width: length,
+          height: length+10,
           decoration: BoxDecoration(
-              color: const Color(0xffF6F4EB),
-              borderRadius: BorderRadius.circular(7.0)
+            color: const Color(0xffF6F4EB),
+            borderRadius: BorderRadius.circular(7.0)
           ),
           child: Center(
             child: Padding(
@@ -85,7 +86,7 @@ GestureDetector QuizCards(Data quiz, context) {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    quiz.start?.substring(1, 5) ?? '-',
+                    quiz.start?.substring(0, 5) ?? '-',
                     style: TextStyle(
                       color: const Color(0xff4682A9),
                       fontSize: 15,
@@ -94,13 +95,13 @@ GestureDetector QuizCards(Data quiz, context) {
                     ),
                   ),
                   SvgPicture.asset(
-                      "assets/images/ic_dashboard_time_div.svg",
-                      fit: BoxFit.fill,
-                      width: 40,
-                      height: 40
+                    "assets/images/ic_dashboard_time_div.svg",
+                    fit: BoxFit.fill,
+                    width: 40,
+                    height: 40
                   ),
                   Text(
-                    quiz.end?.substring(1, 5) ?? '-',
+                    quiz.end?.substring(0, 5) ?? '-',
                     style: TextStyle(
                       color: const Color(0xff4682A9),
                       fontSize: 15,
