@@ -15,8 +15,8 @@ class DateHelper{
 
   bool isWithinOneMonth(DateTime dateTime) {
     DateTime now = DateTime.now();
-    int yearDiff = now.year - dateTime.year;
-    int monthDiff = now.month - dateTime.month;
-    return yearDiff * 12 + monthDiff <= 1;
+    DateTime oneMonth = now.add(const Duration(days: 30));
+    return dateTime.isBefore(oneMonth);
   }
+
 }

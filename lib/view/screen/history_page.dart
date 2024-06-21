@@ -5,9 +5,8 @@ import 'package:semaga_mobile/view/reusable_widget/quiz_card_history.dart';
 import '../utils/date_helper.dart';
 
 Padding HistoryBody(List<Map<String, dynamic>> history, BuildContext context)  {
-  DateHelper dateHelper = DateHelper();
   return Padding(
-    padding: const EdgeInsets.fromLTRB(15, 10, 15, 0),
+    padding: const EdgeInsets.all(15),
     child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

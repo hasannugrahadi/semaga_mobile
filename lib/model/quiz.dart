@@ -77,6 +77,19 @@ class Data {
     _updatedAt = updatedAt;
 }
 
+  Data.defaultData()
+      : _id = 0,
+        _title = '',
+        _codeQuiz = '',
+        _createBy = '',
+        _quizDate = '',
+        _course = '',
+        _start = '',
+        _end = '',
+        _status = '',
+        _createdAt = '',
+        _updatedAt = '';
+
   Data.fromJson(dynamic json) {
     _id = json['id'];
     _title = json['title'];

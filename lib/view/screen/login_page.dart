@@ -34,12 +34,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _savePreferences(token, studentName, studentNis) async {
+  void _savePreferences(token, studentName, studentNis, studentGrade) async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.setString('token', token);
       prefs.setString('name', studentName);
       prefs.setString('nis', studentNis);
+      prefs.setString('grade', studentGrade);
     });
   }
 
@@ -87,10 +88,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 35),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              SizedBox(
+                height: 30,
+              ),
               TextField(
                 controller: _nisController,
                 decoration: InputDecoration(
@@ -161,14 +165,15 @@ class _LoginScreenState extends State<LoginScreen> {
                        await _loginViewModel.fetchLogin(nis, password);
                        String token = _loginViewModel.login.access_token;
                        await _studentViewModel.fetchStudent(token);
-                       String studentName = _studentViewModel.student.name!;
+                       String? studentName = _studentViewModel.student.name;
+                       String? studentGrade = _studentViewModel.student.grade;
                        String studentNis = _studentViewModel.student.nis.toString();
-                       _savePreferences(token, studentName, studentNis);
+                       _savePreferences(token, studentName, studentNis, studentGrade);
                        print(token);
                        Navigator.push(
                          context,
                          MaterialPageRoute(
-                             builder: (context) => DashboardMain(tokenUser: token)
+                             builder: (context) => DashboardMain(tokenUser: token,)
                          ),
                        );
                      } catch(e) {
@@ -176,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                          context: context,
                          builder: (BuildContext context) {
                            return regularDialog(
-                               "NIS atau Password kamu\nsalah, coba lagi",
+                               "NIS atau Password kamu\n $e",
                                "assets/images/ic_warning_triangle.svg"
                            );
                          },
@@ -211,14 +216,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.01,
+                height: MediaQuery.of(context).size.height * 0.015,
               ),
               RichText(
                 text: TextSpan(
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.normal,
-                      fontSize: 11,
+                      fontSize: 9,
                       fontFamily: GoogleFonts.roboto().fontFamily,
                     ),
                     children: <TextSpan>[
@@ -243,18 +248,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     ]),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.24,
+                height: MediaQuery.of(context).size.height * 0.2
               ),
               Center(
                 child: Image.asset('assets/images/logo_school.png',
                     fit: BoxFit.contain, width: 200
                 ),
+              ),
+              const SizedBox(
+                height: 5,
               )
             ],
           ),
         ),
       ]),
     );
+  }
+  @override
+  void dispose(){
+    _nisController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 }
 

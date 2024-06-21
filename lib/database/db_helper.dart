@@ -14,9 +14,19 @@ class DatabaseHelper {
   Future<Database> initDB() async {
     String path = join(await getDatabasesPath(), "semaga.db");
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
-      await db.execute("CREATE TABLE histories(id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, date TEXT, title TEXT, startTime TEXT, endTime TEXT)");
+      await db.execute(
+        "CREATE TABLE "
+        "histories(id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "subject TEXT, "
+        "date TEXT, "
+        "title TEXT, "
+        "startTime TEXT, "
+        "endTime TEXT)"
+      );
     });
   }
+
+  //History
 
   Future<int> insertHistory(Map<String, dynamic> history) async {
     final Database db = await database;
@@ -32,4 +42,9 @@ class DatabaseHelper {
     final Database db = await database;
     await db.delete('histories');
   }
+
+  //Answer
+
+
+
 }

@@ -21,7 +21,6 @@ class _SplashScreenState extends State<SplashScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _token = prefs.getString('token') ?? '';
-      print(_token);
     });
   }
 
@@ -31,8 +30,8 @@ class _SplashScreenState extends State<SplashScreen> {
     _loadToken();
     Timer(
       const Duration(seconds: 3), () {
-        Navigator.of(context).push(_createRoute(_token));
-      },
+      Navigator.of(context).push(_createRoute(_token));
+    },
     );
   }
 
@@ -42,17 +41,17 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Stack(
         children: [
           SvgPicture.asset(
-            'assets/images/bg_splashscreen.svg',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity
+              'assets/images/bg_splashscreen.svg',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity
           ),
           Center(
-            child: Image.asset(
-              'assets/images/Group.png',
-              width: 150,
-              height: 150
-            )
+              child: Image.asset(
+                  'assets/images/Group.png',
+                  width: 150,
+                  height: 150
+              )
           ),
         ],
       ),

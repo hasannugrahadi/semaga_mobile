@@ -73,19 +73,17 @@ Dialog confirmationDialogWA(String text, String image){
               height: 25
           ),
           ElevatedButton(
-              onPressed:(){
-                launchWhatsapp() async {
-                  var whatsapp = "+6283111012720";
-                  var whatsappAndroid =Uri.parse("whatsapp://send?phone=$whatsapp");
-                  if (await canLaunchUrl(whatsappAndroid)) {
-                    await launchUrl(whatsappAndroid);
-                  } else {
-                    throw const FormatException('Error');
-                  }
+              onPressed:() async {
+                var whatsapp = "+6283111012720";
+                var whatsappAndroid =Uri.parse("whatsapp://send?phone=$whatsapp");
+                if (await canLaunchUrl(whatsappAndroid)) {
+                  await launchUrl(whatsappAndroid);
+                } else {
+                  throw const FormatException('Error');
                 }
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white70),
               ),
               child: Text(
                 'HUBUNGI',
@@ -102,5 +100,7 @@ Dialog confirmationDialogWA(String text, String image){
     ),
   );
 }
+
+
 
 
